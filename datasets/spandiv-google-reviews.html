@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Review Spandiv (GMB) | APIs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.2.4/css/fixedHeader.dataTables.min.css">
+</head>
+<body>
+    <div class="container-fluid my-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3>Review Spandiv (GMB)</h3>
+            <a href="../index.html" class="btn btn-sm btn-secondary"><i class="bi-arrow-left"></i> Kembali</a>
+        </div>
+        <div class="card shadow">
+            <div class="card-body">
+                <p><i class="bi-link-45deg"></i> <a href="https://sgr.spandiv.xyz" target="_blank">https://sgr.spandiv.xyz</a></p>
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover table-bordered mb-0" id="table-dataset">
+                        <thead class="bg-light d-none">
+                            <tr><th></th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td align="center"><span class="text-primary fst-italic">Memuat...</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.2.4/js/dataTables.fixedHeader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ashl1/datatables-rowsgroup@fbd569b8768155c7a9a62568e66a64115887d7d0/dataTables.rowsGroup.js"></script>
+    <script src="https://ajifatur.github.io/assets/spandiv.min.js"></script>
+    <script type="text/javascript">
+        // Fetch Data
+        $.ajax({
+            type: "get",
+            url: "https://sgr.spandiv.xyz",
+            success: function(response) {
+                // Set variables
+                var results = JSON.parse(response);
+                // Add table header
+                var th = ['thumbnail', 'name', 'snippet', 'rating', 'date', 'likes'];
+                var thead = '';
+                thead += '<tr>';
+                for(var i=0; i<th.length; i++) {
+                    thead += '<th>' + th[i] + '</th>';
+                }
+                thead += '</tr>';
+                $("#table-dataset thead").html(thead).removeClass("d-none");
+                $("#table-dataset tbody tr:first-child td").attr("colspan",th.length);
+                // Add table body
+                var tbody = '';
+                for(var i=0; i<results.length; i++) {
+                    tbody += '<tr>';
+                    tbody += '<td>' + '<img src="' + results[i].user.thumbnail + '" width="50">' + '</td>';
+                    tbody += '<td>' + results[i].user.name + '</td>';
+                    tbody += '<td>' + results[i].snippet + '</td>';
+                    tbody += '<td>' + results[i].rating + '</td>';
+                    tbody += '<td>' + results[i].date + '</td>';
+                    tbody += '<td>' + results[i].likes + '</td>';
+                    tbody += '</tr>';
+                }
+                $("#table-dataset tbody").html(tbody);
+                // Initialize DataTable
+                Spandiv.DataTable("#table-dataset", {
+                    orderAll: true
+                });
+            },
+            error: function() {
+                console.log("File not found");
+            }
+        });
+    </script>
+</body>
+</html>
