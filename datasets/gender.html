@@ -74,8 +74,9 @@
                 // Show total
                 $("#total").text("Menampilkan " + Spandiv.NumberFormat(results.length.toString()) + " data.").removeClass("d-none");
             },
-            error: function() {
-                console.log("File not found");
+            error: function(err) {
+                alert("See your Console to know the error messages.");
+                console.log(err);
             }
         });
     </script>

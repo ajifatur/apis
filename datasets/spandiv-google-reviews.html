@@ -76,8 +76,9 @@
                     orderAll: true
                 });
             },
-            error: function() {
-                console.log("File not found");
+            error: function(err) {
+                alert("See your Console to know the error messages.");
+                console.log(err);
             }
         });
     </script>

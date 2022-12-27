@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Do'a Sehari-Hari | APIs</title>
+    <title>Kode Bank | APIs</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css">
@@ -12,12 +12,12 @@
 <body>
     <div class="container-fluid my-3">
         <div class="d-flex justify-content-between align-items-center">
-            <h3>Do'a Sehari-Hari</h3>
+            <h3>Kode Bank</h3>
             <a href="../index.html" class="btn btn-sm btn-secondary"><i class="bi-arrow-left"></i> Kembali</a>
         </div>
         <div class="card shadow">
             <div class="card-body">
-                <p><i class="bi-link-45deg"></i> <a href="https://doa-doa-api-ahmadramadhan.fly.dev/api" target="_blank">https://doa-doa-api-ahmadramadhan.fly.dev/api</a></p>
+                <p><i class="bi-link-45deg"></i> <a href="https://scraper-kode-bank.vercel.app" target="_blank">https://scraper-kode-bank.vercel.app</a></p>
                 <div class="table-responsive">
                     <table class="table table-sm table-hover table-bordered mb-0" id="table-dataset">
                         <thead class="bg-light d-none">
@@ -44,10 +44,10 @@
         // Fetch Data
         $.ajax({
             type: "get",
-            url: "https://doa-doa-api-ahmadramadhan.fly.dev/api",
+            url: "https://scraper-kode-bank.vercel.app",
             success: function(response) {
                 // Set variables
-                var results = JSON.parse(response);
+                var results = response;
                 var keys = results.length > 0 ? Object.keys(results[0]) : undefined;
                 var isObject = results.length > 0 ? typeof Object.values(results)[0] === "object" ? true : false : false;
                 // Add table header
@@ -58,7 +58,7 @@
                         thead += '<th>' + keys[i] + '</th>';
                     }
                     thead += '</tr>';
-                    $("#table-dataset thead").html(thead).removeClass("d-none");
+                    $("#table-dataset thead").html(thead).removeClass("d-none");;
                     $("#table-dataset tbody tr:first-child td").attr("colspan",keys.length);
                 }
                 // Add table body
@@ -68,7 +68,11 @@
                         tbody += '<tr>';
                         if(isObject) {
                             for(var j=0; j<Object.keys(results[i]).length; j++) {
-                                tbody += '<td>' + results[i][Object.keys(results[i])[j]] + '</td>';
+                                if(Object.keys(results[i])[j] == 'url')
+                                    tbody += '<td>' + '<a href="' + results[i][Object.keys(results[i])[j]] + '" target="_blank">' + results[i][Object.keys(results[i])[j]] + '</a>' + '</td>';
+                                else
+                                    tbody += '<td>' + results[i][Object.keys(results[i])[j]] + '</td>';
+
                             }
                         }
                         else {
