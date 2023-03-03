@@ -6,6 +6,8 @@
     <title>FaturHelper Network Dependents</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.2.4/css/fixedHeader.dataTables.min.css">
 </head>
 <body>
     <div class="container-fluid my-3">
@@ -15,15 +17,20 @@
         </div>
         <div class="card shadow">
             <div class="card-body">
+                <p><i class="bi-link-45deg"></i> <a href="https://scraper-github-dependents.vercel.app" target="_blank">https://scraper-github-dependents.vercel.app</a></p>
                 <div class="table-responsive">
-                    <table class="table table-sm table-hover table-bordered mb-0">
+                    <table class="table table-sm table-hover table-bordered mb-0" id="table-dataset">
                         <thead class="bg-light">
                             <tr>
-                                <th>Repository</th>
-                                <th>Version</th>
+                                <th width="100%">Repository</th>
+                                <th width="70">Version</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            <tr>
+                                <td align="center"><span class="text-primary fst-italic">Memuat...</span></td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -31,48 +38,52 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.2.4/js/dataTables.fixedHeader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ashl1/datatables-rowsgroup@fbd569b8768155c7a9a62568e66a64115887d7d0/dataTables.rowsGroup.js"></script>
     <script src="https://ajifatur.github.io/assets/spandiv.min.js"></script>
     <script async>
-        // Display repos
-        let repos = [
-            "ajifatur/akuntansi-online",
-            "ajifatur/siakur",
-            "ajifatur/absensi-manager",
-            "ajifatur/karir-personalitytalk",
-            "ajifatur/personalitytalk-v2",
-            "ajifatur/psikotes",
-            "praseetyaa/monitoring-debitur-bni",
-            "praseetyaa/tes-personalitytalk",
-            "praseetyaa/campusdigital-v2",
-            "praseetyaa/v2kompetensiku",
-        ];
-        let html = '';
-        for(let k=0; k<repos.length; k++) {
-            html += '<tr data-repo="' + repos[k] + '">';
-            html += '<td>' + repos[k] + '</td>';
-            html += '<td>Loading...</td>';
-            html += '</tr>';
-        }
-        $(".table tbody").html(html);
-
-
-        // Fetch repos
-        for(let i=0; i<repos.length; i++) {
-            fetch("https://raw.githubusercontent.com/" + repos[i] + "/master/composer.lock")
-                .then(r =>  r.json().then(data => ({url: r.url, body: data})))
-                .then((data) => {
-                    let index;
-                    for(let j=0; j<data.body.packages.length; j++) {
-                        if(data.body.packages[j].name === "ajifatur/faturhelper" || data.body.packages[j].name === "campusdatamedia/faturhelper") {
-                            index = j;
-                        }
+        // Fetch Data
+        $.ajax({
+            type: "get",
+            url: "https://scraper-github-dependents.vercel.app",
+            success: function(response) {
+                // Set variables
+                var results = response;
+                // Add table body
+                if(results.length > 0) {
+                    var tbody = '';
+                    for(var i=0; i<results.length; i++) {
+                        tbody += '<tr data-repo="' + results[i].user_name + "/" + results[i].repo_name + '">';
+                        tbody += '<td><a href="' + results[i].user_url + '" target="_blank">' + results[i].user_name + '</a> / <a href="' + results[i].repo_url + '" target="_blank">' + results[i].repo_name + '</a></td>';
+                        tbody += '<td>Loading...</td>';
+                        tbody += '</tr>';
                     }
-                    let repo = data.url.replace("https://raw.githubusercontent.com/","");
-                    repo = repo.replace("/master/composer.lock","");
-                    $(".table tbody tr[data-repo='" + repo + "'] td:last-child").text(data.body.packages[index].version);
-                })
-                .catch(error => console.log(error));
-        }
+                    $("#table-dataset tbody").html(tbody);
+                    for(var i=0; i<results.length; i++) {
+                        fetch("https://raw.githubusercontent.com/" + results[i].user_name + "/" + results[i].repo_name + "/master/composer.lock")
+                            .then(r =>  r.json().then(data => ({url: r.url, body: data})))
+                            .then((data) => {
+                                let index;
+                                for(let j=0; j<data.body.packages.length; j++) {
+                                    if(data.body.packages[j].name === "ajifatur/faturhelper" || data.body.packages[j].name === "campusdatamedia/faturhelper") {
+                                        index = j;
+                                    }
+                                }
+                                let repo = data.url.replace("https://raw.githubusercontent.com/","");
+                                repo = repo.replace("/master/composer.lock","");
+                                $(".table tbody tr[data-repo='" + repo + "'] td:last-child").text(data.body.packages[index].version);
+                            })
+                            .catch(error => console.log(error));
+                    }
+                }
+            },
+            error: function(err) {
+                alert("See your Console to know the error messages.");
+                console.log(err);
+            }
+        });
     </script>
 </body>
 </html>
